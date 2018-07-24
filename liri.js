@@ -44,14 +44,16 @@ function userInput(source, input) {
 function pullTweets() {
   var client = new Twitter(keys.Twitter);
 
-var params = {screen_name: '@Chris41913234', count: 20};
+var params = {screen_name: 'nodejs', count: 20};
 client.get('statuses/user_timeline', params, function(error, tweets, response) {
   if (!error) {
     console.log(tweets);
   }
-
-  
 });
+
+
+
+
 }
 
 function pullSong() {
