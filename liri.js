@@ -6,28 +6,6 @@ var request = require("request");
 var keys = require("./keys");
 var fs = require("fs");
 
-var client = new Twitter(keys.Twitter);
-
-var params = {screen_name: 'cbreeze28'};
-client.get('statuses/user_timeline', params, function(error, tweets, response) {
-  if (!error) {
-    console.log(tweets);
-  }
-
-  
-});
-
-
-var spotify = new Spotify(keys.Spotify);
- 
-spotify.search({ type: 'track', query: 'Hit me baby one more' }, function(err, data) {
-  if (err) {
-    return console.log('Error occurred: ' + err);
-  }
- 
-console.log(JSON.stringify(data,null, 2)); 
-});
-
 var source = process.argv[2];
 var input = "";
 
@@ -64,5 +42,26 @@ function userInput(source, input) {
 }
 
 function pullTweets() {
+  var client = new Twitter(keys.Twitter);
 
+var params = {screen_name: '@Chris41913234', count: 20};
+client.get('statuses/user_timeline', params, function(error, tweets, response) {
+  if (!error) {
+    console.log(tweets);
+  }
+
+  
+});
+}
+
+function pullSong() {
+  var spotify = new Spotify(keys.Spotify);
+ 
+spotify.search({ type: 'track', query: 'Hit me baby one more time' }, function(err, data) {
+  if (err) {
+    return console.log('Error occurred: ' + err);
+  }
+ 
+console.log(JSON.stringify(data,null, 2)); 
+});
 }
