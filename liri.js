@@ -1,69 +1,109 @@
+//node packages and keys file
 require("dotenv").config();
-
 var Twitter = require("twitter");
 var Spotify = require("node-spotify-api");
 var request = require("request");
-var keys = require("./keys");
+var keys = require("./keys.js");
 var fs = require("fs");
 
-var source = process.argv[2];
-var input = "";
 
-userInput(source, input);
+// var logging = function(artist) {
+//   return artist.name;
+// };
 
-function userInput(source, input) {
-  switch (source) {
-    case "my-tweets":
-    pullTweets();
-    break;
-
-    case "spotify-this-song":
-    var title = input;
-      if (title === "") {
-        findSong();
-      } else {
-        pullSong(title)
-      }
-      break;
-
-    case "movie-this":
-    var movie = input;
-      if (title === "") {
-        findMovie("The Rock");
-      } else {
-        pullMovie(movie)
-      }
-      break;
-
-    case "do-what-it-says":
-    doWhatItSays();
-    break;
-  }
+var user = function(caseData, functionData) {
+  
+  switch (caseData){
+  case "my-tweets":
+  pullTweets();
+  break;
+  case "spotify-this-song":
+  pullSong(functionData);
+  break;
+  case "movie-this":
+  movie(functionData);
+  break;
+  case "do-what-it-says":
+  doWhatItSays(functionData);
+  break;
+  default:
+  console.log("I dont know");
 }
+};
 
-function pullTweets() {
-  var client = new Twitter(keys.Twitter);
+//pull tweets from throw account
+var pullTweets = function() {
+  var client = new Twitter(keys.twitter);
+  var params = { screen_name: '@Chris41913234', count: 20};
 
-var params = {screen_name: 'nodejs', count: 20};
-client.get('statuses/user_timeline', params, function(error, tweets, response) {
+  client.get('statuses/user_timeline', params, function(error, tweets, response) {
   if (!error) {
-    console.log(tweets);
+    console.log('Error: ' + error);
+    return;
+  } else {
+    for (var i = 0;i < tweets.length; i++) {
+      console.log(tweets[i].created_at);
+      console.log("");
+      console.log(tweets[i].text);
+    }
   }
-});
+  });
+};
 
-
-
-
-}
-
-function pullSong() {
-  var spotify = new Spotify(keys.Spotify);
- 
-spotify.search({ type: 'track', query: 'Hit me baby one more time' }, function(err, data) {
+//pull songs from spotify
+var pullSong = function (songName) {
+  if (songName === undefined) {
+    songName = "What's my age again";
+  }
+spotify.search({ type: 'track', query: songName + '&limit=1&'}, function(err, data) {
   if (err) {
-    return console.log('Error occurred: ' + err);
+    console.log('Error: ' + err);
+    return;
+  } var output = data.tracks.items; 
+  for (var i = 0; i < data.tracks.items.length; i++) {
+    console.log[i];
+    console.log("Artist: " + output[i].artists.map(logging));
+    console.log("song name: " + songs[i].name);
+    console.log("preview song: " + songs[i].preview_url);
+    console.log("album: " + songs[i].album.name);
+    console.log("-----------------------------------");
   }
- 
-console.log(JSON.stringify(data,null, 2)); 
 });
-}
+// console.log(JSON.stringify(data,null, 2)); 
+};
+
+
+var movie = function(movieName) {
+  var urlMovie = "http://omdapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+  request (urlMovie, function(err, res, body) {
+    if (err) {
+      console.log('Error: ' + err);
+     
+      var returnJSON = JSON.parse(body);
+      var output = ("Tite: " + returnJSON.Title + ", " + "Year: " + returnJSON.Year + "," + "Rated: " + returnJSON.Rated + 
+      ", " + "IMDB Rating: " + returnJSON.imdbRating + ", " + "Country: " + returnJSON.Country + "," + "Language: " + 
+      returnJSON.Language + ", " + "Plot: " + returnJSON.Plot + ", " + "Actors/Actresses: " + returnJSON.Actors + ", " +
+      "Tomato Rating: " + returnJSON.Ratings[1].Value);
+
+      console.log(output);
+    }
+  });
+};
+
+var doWhatItSays = function() {
+  fs.readFile("random.txt", "utf8", function(error, data) {
+    console.log(data);
+    var dataA = data.split(", ");
+    if (dataA.length === 2) {
+      user(dataA[0], dataA[1]);
+    } else if 
+      (dataA.length === 1) {
+      user(dataA[0]);
+      }
+  });
+};
+
+var run = function(argOne, argTwo) {
+  user(argOne, argTwo);
+};
+run(process.argv[2], process.argv[3]);
