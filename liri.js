@@ -6,30 +6,12 @@ var request = require("request");
 var keys = require("./keys.js");
 var fs = require("fs");
 
-
-// var logging = function(artist) {
-//   return artist.name;
-// };
-
-var user = function(caseData, functionData) {
-  
-  switch (caseData){
-  case "my-tweets":
-  pullTweets();
-  break;
-  case "spotify-this-song":
-  pullSong(functionData);
-  break;
-  case "movie-this":
-  movie(functionData);
-  break;
-  case "do-what-it-says":
-  doWhatItSays(functionData);
-  break;
-  default:
-  console.log("I dont know");
-}
+//log artist globally
+var artiststs = function(artist) {
+  return artist.name;
 };
+
+
 
 //pull tweets from throw account
 var pullTweets = function() {
@@ -38,9 +20,6 @@ var pullTweets = function() {
 
   client.get('statuses/user_timeline', params, function(error, tweets, response) {
   if (!error) {
-    console.log('Error: ' + error);
-    return;
-  } else {
     for (var i = 0;i < tweets.length; i++) {
       console.log(tweets[i].created_at);
       console.log("");
@@ -55,45 +34,51 @@ var pullSong = function (songName) {
   if (songName === undefined) {
     songName = "What's my age again";
   }
-spotify.search({ type: 'track', query: songName + '&limit=1&'}, function(err, data) {
+  var spotify = new Spotify(keys.spotify);
+  spotify.search({ type: 'track', query: songName + '&limit=1&'}, function(err, data) {
   if (err) {
     console.log('Error: ' + err);
     return;
   } var output = data.tracks.items; 
   for (var i = 0; i < data.tracks.items.length; i++) {
     console.log[i];
-    console.log("Artist: " + output[i].artists.map(logging));
-    console.log("song name: " + songs[i].name);
-    console.log("preview song: " + songs[i].preview_url);
-    console.log("album: " + songs[i].album.name);
-    console.log("-----------------------------------");
+    console.log("Artist: " + output[i].artists.map(artiststs));
+    console.log("song name: " + output[i].name);
+    console.log("preview song: " + output[i].artists.website);
+    console.log("album: " + output[i].album.name);
   }
 });
+
 // console.log(JSON.stringify(data,null, 2)); 
+//Couldn't get stringify to work
 };
 
 
 var movie = function(movieName) {
-  var urlMovie = "http://omdapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+  if (movieName === undefined) {
+    movieName = "The Rock";
+  }
+  var urlMovie = "http://www.omdapi.com/?t=" + movieName + "&y=&plot=full&tomatoes=true&apikey=73851bf7";
   request (urlMovie, function(err, res, body) {
-    if (err) {
-      console.log('Error: ' + err);
-     
+    if (!err && res.statusCode === 200) {     
       var returnJSON = JSON.parse(body);
-      var output = ("Tite: " + returnJSON.Title + ", " + "Year: " + returnJSON.Year + "," + "Rated: " + returnJSON.Rated + 
-      ", " + "IMDB Rating: " + returnJSON.imdbRating + ", " + "Country: " + returnJSON.Country + "," + "Language: " + 
-      returnJSON.Language + ", " + "Plot: " + returnJSON.Plot + ", " + "Actors/Actresses: " + returnJSON.Actors + ", " +
-      "Tomato Rating: " + returnJSON.Ratings[1].Value);
-
-      console.log(output);
-    }
+      console.log("Title: " + returnJSON.Title);
+      console.log("Year: " + returnJSON.Year);
+      console.log("Rated: " + returnJSON.Rated);
+      console.log("IMDB Rating: " + returnJSON.imdbRating);
+      console.log("Country: " + returnJSON.Country);
+      console.log("Language: " + returnJSON.Language);
+      console.log("Plot: " + returnJSON.Plot);
+      console.log("Actors: " + returnJSON.Actors);
+      console.log("Rotten Tomatoes Rating: " + returnJSON.Ratings[1].Value);
+    }    
   });
 };
 
 var doWhatItSays = function() {
   fs.readFile("random.txt", "utf8", function(error, data) {
     console.log(data);
-    var dataA = data.split(", ");
+    var dataA = data.split(",");
     if (dataA.length === 2) {
       user(dataA[0], dataA[1]);
     } else if 
@@ -102,8 +87,28 @@ var doWhatItSays = function() {
       }
   });
 };
+//user chooses case(mispelled switch and made everything fail. Only took a week to figure out mispelling)
+var user = function(caseData, functionData) {
+  
+  switch (caseData){
+  case "my-tweets":
+  pullTweets();
+  break;
+  case "spotify-this-song":
+  pullSong(functionData);
+  break;
+  case "movie-this":
+  movie(functionData);
+  break;
+  case "do-what-it-says":
+  doWhatItSays();
+  break;
+  default:
+  console.log("I dont know");
+}
+};
 
-var run = function(argOne, argTwo) {
-  user(argOne, argTwo);
+var run = function(x, y) {
+  user(x, y);
 };
 run(process.argv[2], process.argv[3]);
