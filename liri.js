@@ -56,11 +56,14 @@ var pullSong = function (songName) {
 
 var movie = function(movieName) {
   if (movieName === undefined) {
-    movieName = "The Rock";
+    movieName = "the rock";
+    movieName = movieName.trim();
   }
-  var urlMovie = "http://www.omdapi.com/?t=" + movieName + "&y=&plot=full&tomatoes=true&apikey=73851bf7";
-  request (urlMovie, function(err, res, body) {
-    if (!err && res.statusCode === 200) {     
+  var urlMovie = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+  console.log(urlMovie);
+  request (urlMovie, function(error, response, body) {
+    body = body.trim();
+    if (!error && response.statusCode === 200) {     
       var returnJSON = JSON.parse(body);
       console.log("Title: " + returnJSON.Title);
       console.log("Year: " + returnJSON.Year);
@@ -73,7 +76,7 @@ var movie = function(movieName) {
       console.log("Rotten Tomatoes Rating: " + returnJSON.Ratings[1].Value);
     }    
   });
-};
+}
 
 var doWhatItSays = function() {
   fs.readFile("random.txt", "utf8", function(error, data) {
