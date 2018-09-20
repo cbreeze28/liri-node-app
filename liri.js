@@ -57,7 +57,6 @@ var pullSong = function (songName) {
 var movie = function(movieName) {
   if (movieName === undefined) {
     movieName = "the rock";
-    movieName = movieName.trim();
   }
   var urlMovie = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
   console.log(urlMovie);
